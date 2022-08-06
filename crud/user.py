@@ -3,7 +3,7 @@ from configs import Configs
 from models.User import User
 from pydantic import EmailStr, Field
 
-from crud.commons import PyObjectId
+from crud.base import PyObjectId
 
 
 class UserEntity(User):
