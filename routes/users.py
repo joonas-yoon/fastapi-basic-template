@@ -1,12 +1,10 @@
-from controllers.auth import get_current_active_user
-from controllers.db import get_collection
-from controllers.users import get_user, get_users
-from crud.user import UserEntity
+from controllers.auth import (create_user, entity_to_user,
+                              get_current_active_user, get_user_entity, get_users)
 from fastapi import APIRouter, Body, Depends
 from fastapi import status as Status
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
-from models.User import User
+from models import User
 
 router = APIRouter()
 
@@ -18,7 +16,7 @@ async def get_all_users():
 
 @router.get("/users/{username}", response_model=User)
 async def get_all_users(username: str):
-    user = get_user(username=username)
+    user = get_user_entity(username=username)
     return user
 
 
@@ -29,13 +27,7 @@ async def read_user_me(current_user: User = Depends(get_current_active_user)):
 
 @router.post("/user/create", response_description="Add new User", response_model=User)
 async def create_student(user: User = Body(...), password: str = Body(...)):
-    user_form = UserEntity(**user.dict(), hashed_password=password)
-    encoded_user = jsonable_encoder(user_form)
-
-    coll = get_collection("users")
-    new_user = await coll.insert_one(encoded_user)
-    created_user_dict = await coll.find_one({"_id": new_user.inserted_id})
-
-    decoded_user = User(**created_user_dict)
-    decoded_user = jsonable_encoder(decoded_user)
+    created_entity = create_user(user, password)
+    created_user = entity_to_user(created_entity)
+    decoded_user = jsonable_encoder(created_user)
     return JSONResponse(status_code=Status.HTTP_201_CREATED, content=decoded_user)

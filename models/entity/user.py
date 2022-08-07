@@ -1,9 +1,9 @@
 from bson import ObjectId
 from configs import Configs
-from models.User import User
+from models import User
 from pydantic import EmailStr, Field
 
-from crud.commons import PyObjectId
+from .base import PyObjectId
 
 
 class UserEntity(User):
