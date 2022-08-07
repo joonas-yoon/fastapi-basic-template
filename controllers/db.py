@@ -1,17 +1,13 @@
 from configs import Configs
-from motor.motor_asyncio import AsyncIOMotorClient
+from pymongo import MongoClient
+from pymongo.collection import Collection as MongoCollection
 
-client = AsyncIOMotorClient(Configs.DB_URL)
+client = MongoClient(Configs.DB_URL)
 database = client[Configs.DB_DATABASE]
 
-def get_collection(name: str) -> AsyncIOMotorClient:
-  """
-  Get collection, create if not exists.
 
-  Args:
-      name (str): determines name of collection
-
-  Returns:
-      AsyncIOMotorClient: client connected collection
-  """
-  return database[name]
+def get_collection(name: str) -> MongoCollection:
+    """
+    Get collection, create if not exists.
+    """
+    return database[name]
